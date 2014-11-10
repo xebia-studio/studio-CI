@@ -11,9 +11,9 @@ function dlcache() {
     if [ ! -d $CACHE_DIR ];then
         mkdir -p $CACHE_DIR
     fi
-    if [ ! -f $CACHE_DIR/$2 ];then
+    if [ $SHOULD_CACHE == 0 ] || [ ! -f $CACHE_DIR/$2 ];then
         echo Downloading $2
-        curl $1 -o $CACHE_DIR/$2
+        curl -L $1 -o $CACHE_DIR/$2
     fi
 
     if [ $# -eq 3 ];then
@@ -35,6 +35,7 @@ fi
 
 # Parameters
 CONTAINER=$1
+SHOULD_CACHE=1
 SHOULD_BUILD=1
 SHOULD_PUSH=0
 while (( "$#" )); do
@@ -44,6 +45,9 @@ while (( "$#" )); do
     if [ "$1" == "--push-only" ]; then
         SHOULD_PUSH=1
         SHOULD_BUILD=1
+    fi
+    if [ "$1" == "--no-cache" ]; then
+        SHOULD_CACHE=0
     fi
     shift
 done
