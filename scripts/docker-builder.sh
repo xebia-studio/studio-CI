@@ -11,9 +11,16 @@ function dlcache() {
     if [ ! -d $CACHE_DIR ];then
         mkdir -p $CACHE_DIR
     fi
-    if [ $SHOULD_CACHE == 0 ] || [ ! -f $CACHE_DIR/$2 ];then
-        echo Downloading $2
-        curl -L $1 -o $CACHE_DIR/$2
+
+    if [ $# -gt 1 ];then
+        DEST=$2
+    else
+        DEST=$(basename $1)
+    fi
+
+    if [ $SHOULD_CACHE == 0 ] || [ ! -f $CACHE_DIR/$DEST ];then
+        echo Downloading $DEST
+        curl -L $1 -o $CACHE_DIR/$DEST
     fi
 
     if [ $# -eq 3 ];then
