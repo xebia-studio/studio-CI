@@ -33,8 +33,8 @@ RUN apt-get install -y openssh-server
 RUN apt-get install -y libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 zlib1g lib32z1
 
 # Downloads the Platform and Build tools
-RUN ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk -u --all --filter platform-tools
-RUN ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk -u --all --filter build-tools-19.1.0,android-19
-RUN ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk -u --all --filter build-tools-21.1.1,android-21
+RUN ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk -u --all --filter \
+platform-tools,extra-android-support,extra-android-m2repository,extra-google-google_play_services\
+build-tools-19.1.0,android-19,\
 
 CMD ["/usr/sbin/sshd", "-D"]
