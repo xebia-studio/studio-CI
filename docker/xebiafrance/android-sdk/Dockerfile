@@ -9,6 +9,8 @@ ENV JAVA_HOME /opt/jdk1.7.0_71
 ENV M2_HOME /opt/apache-maven-3.2.3
 ENV PATH $ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$M2_HOME/bin:$JAVA_HOME/bin:$PATH
 
+ADD etc_profile.sh /etc/profile.d/01_android-sdk.sh
+
 # Add user jenkins to the image
 RUN adduser --quiet jenkins
 RUN echo "jenkins:jenkins" | chpasswd

@@ -7,3 +7,7 @@ dlcache https://updates.jenkins-ci.org/latest/sonar.hpi
 dlcache http://updates.jenkins-ci.org/latest/build-monitor-plugin.hpi
 dlcache http://updates.jenkins-ci.org/latest/build-with-parameters.hpi
 dlcache http://updates.jenkins-ci.org/latest/greenballs.hpi
+dlcache http://updates.jenkins-ci.org/latest/oauth-credentials.hpi
+dlcache http://updates.jenkins-ci.org/latest/job-import-plugin.hpi
+dlcache http://updates.jenkins-ci.org/latest/job-exporter.hpi
+dlcache http://updates.jenkins-ci.org/latest/google-oauth-plugin.hpi
