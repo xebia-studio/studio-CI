@@ -4,7 +4,17 @@ WORKSPACE=$(cd $(dirname $0);cd ..; pwd)
 DOCKER_DIR=$WORKSPACE/docker
 CACHE_DIR=cache
 function usage {
-    echo $(basename $0) CONTAINER [--push];
+    cat << EOF
+$(basename $0) OPTIONS CONTAINER
+OPTIONS:
+    --push
+    --push-only
+    --build
+    --list
+    --help
+    --no-cache
+EOF
+
 }
 
 function dlcache() {
@@ -35,39 +45,71 @@ function header() {
 #    echo "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"
 }
 
+function listContainers() {
+    for PREFIX in $(ls -1 $DOCKER_DIR);do
+        if [ -d $DOCKER_DIR/$PREFIX ];then
+            for CONTAINER in $(ls -1 $DOCKER_DIR/$PREFIX);do
+                echo "- $PREFIX/$CONTAINER"
+            done
+        fi
+    done
+}
+
+function checkContainer() {
+    if [ ! -d $DOCKER_DIR/$CONTAINER ];then
+        echo $CONTAINER does not exist
+        echo
+        echo "Available docker containers :"
+        listContainers
+        echo
+        exit 2
+    fi
+    cd $DOCKER_DIR/$CONTAINER
+    VERSION=$(grep "# VERSION" Dockerfile | awk '{print $3}')
+}
+
 if [ $# -lt 1 ];then
     usage
     exit 1
 fi
 
 # Parameters
-CONTAINER=$1
 SHOULD_CACHE=1
-SHOULD_BUILD=1
+SHOULD_BUILD=0
+SHOULD_LIST=0
 SHOULD_PUSH=0
 while (( "$#" )); do
-    if [ "$1" == "--push" ]; then
+
+    CONTAINER=$1
+    case "$1" in
+    "--push")
         SHOULD_PUSH=1
-    fi
-    if [ "$1" == "--push-only" ]; then
+    ;;
+    "--build")
+        SHOULD_BUILD=1
+    ;;
+    "--push-only")
         SHOULD_PUSH=1
         SHOULD_BUILD=1
-    fi
-    if [ "$1" == "--no-cache" ]; then
+    ;;
+    "--no-cache")
         SHOULD_CACHE=0
-    fi
+    ;;
+    "--list")
+        SHOULD_LIST=1
+        SHOULD_BUILD=0
+    ;;
+    "--help")
+        usage
+        exit 0
+    ;;
+    esac
     shift
 done
 
-if [ ! -d $DOCKER_DIR/$CONTAINER ];then
-    echo $CONTAINER does not exist
-    exit 2
-fi
-
-cd $DOCKER_DIR/$CONTAINER
-VERSION=$(grep "# VERSION" Dockerfile | awk '{print $3}')
-
 if [ $SHOULD_BUILD == 1 ];then
+    checkContainer
+
     header "Pre building $CONTAINER:$VERSION"
     if [ -d prebuild ];then
         for SCRIPT in $(ls prebuild);do
@@ -89,6 +131,11 @@ if [ $SHOULD_BUILD == 1 ];then
 fi
 
 if [ $SHOULD_PUSH == 1 ];then
+    checkContainer
     header "Uploading $CONTAINER:$VERSION to docker hub"
     docker push $CONTAINER:$VERSION || exit 4
+fi
+
+if [ $SHOULD_LIST == 1 ];then
+   listContainers
 fi
