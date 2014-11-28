@@ -34,9 +34,11 @@ RUN apt-get install -y openssh-server
 # Libraries required to build
 RUN apt-get install -y libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 zlib1g lib32z1
 
-# Downloads the Platform and Build tools
+# Downloads the Platform and Build tools. Retrieve available components with following
+#   android list sdk -e
 RUN ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk -u --all --filter \
-platform-tools,extra-android-support,extra-android-m2repository,extra-google-google_play_services\
-build-tools-21.1.1,android-21
+platform-tools,extra-android-support,extra-android-m2repository,extra-google-google_play_services,\
+build-tools-21.1.1,android-21,\
+sys-img-x86-android-21
 
 CMD ["/usr/sbin/sshd", "-D"]
